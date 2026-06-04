@@ -1,6 +1,14 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field # Importamos al portero de la disco
-
+import joblib
+# Cargar el modelo entrenado
+try:
+    print("--- Cargando el modelo entrenado ---")
+    modelo_ia = joblib.load("modelos/modelo_casas.joblib")
+    print("Modelo cargado exitosamente.")
+except Exception as e:
+    print(f"Error al cargar el modelo: {e}")
+    modelo_ia = None
 app = FastAPI(
     title="API Inmobiliaria Inteligente",
     description="Esta es una API de ejemplo creada con FastAPI",
@@ -10,7 +18,7 @@ app = FastAPI(
 class CasaInput(BaseModel):
     metros_cuadrados: float = Field(..., gt=10, description="Metros cuadrados de la casa, debe ser mayor a 10")
     habitaciones: int = Field(..., ge=1, le=15)
-    tiene_garaje: bool
+    tiene_garaje: int = Field(..., description="Indica si la casa tiene garaje o no")
 # Endpoint de ejemplo o punto de entrada
 @app.get("/")
 def mensaje_bienvenida():
