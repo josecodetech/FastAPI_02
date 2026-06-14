@@ -28,9 +28,22 @@ def mensaje_bienvenida():
 @app.post("/predecir")
 def predecir_precio(datos_casa: CasaInput):
     # simulamos respuesta de prediccion
-    precio_falso = datos_casa.metros_cuadrados * 1500
+    # precio_falso = datos_casa.metros_cuadrados * 1500
+    # datos en lista de listas para ia
+    datos_formateados = [[
+        datos_casa.metros_cuadrados,
+        datos_casa.habitaciones,
+        datos_casa.tiene_garaje
+    ]]
+    # comprobamos si el modelo esta cargado
+    if modelo_ia is None:
+        return {"error": "El modelo no está cargado. No se puede realizar la predicción."}
+    # pasamos los datos al modelo para hacer la predicción
+    prediccion_cruda = modelo_ia.predict(datos_formateados)[0]
+    # redondeamos la prediccion a 2 decimales
+    precio_final = round(prediccion_cruda, 2)
     return {
-        "mensaje": "Datos recibidos correctamente",
-        "casa_evaluada": datos_casa,
-        "precio_estimado": precio_falso
+        "mensaje": "Predicción realizada con éxito",
+        "casa_evaluada":datos_casa,
+        "precio_estimado": precio_final
     }
